@@ -6,6 +6,7 @@ import StockGraph from "./StockGraph";
 import Header from "./Header";
 import StockService from "../services/StockService";
 import { Stock } from "../types";
+import { STOCKS } from "../constants";
 const Home: React.FC = () => {
 	const [stocks, setStocks] = useState<Stock[]>([]);
 
@@ -22,30 +23,20 @@ const Home: React.FC = () => {
 		setStocks([...StockService.getStocks()]);
 	};
 
+	const removeStock = (name: string) => {
+		StockService.removeStock(name);
+		setStocks([...StockService.getStocks()]);
+	};
+
 	return (
-		<div
-			style={{
-				padding: "1rem",
-				display: "flex",
-				flexDirection: "column",
-				gap: "2rem",
-			}}
-		>
+		<div className="main-content">
 			<Header />
-			<TopCards stocks={stocks} />
-			<div
-				style={{ display: "flex", flexDirection: "row" }}
-			>
-				<LeftForm
-					stocks={[
-						"AAPL",
-						"GOOGL",
-						"AMZN",
-						"BINANCE:BTCUSDT",
-						"BINANCE:ETHUSDT",
-					]}
-					onAddStock={addStock}
-				/>
+			<TopCards
+				stocks={stocks}
+				onRemoveStock={removeStock}
+			/>
+			<div className="stocks-container">
+				<LeftForm stocks={STOCKS} onAddStock={addStock} />
 				<StockGraph stocks={stocks} />
 			</div>
 		</div>

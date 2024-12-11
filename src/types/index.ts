@@ -19,3 +19,8 @@ export interface StockResponse {
 	t: number;
 	v: number;
 }
+
+export interface ApiResponse {
+	data: [StockResponse];
+	type: string;
+}

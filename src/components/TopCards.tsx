@@ -4,27 +4,40 @@ import {
 	Card,
 	CardContent,
 	Typography,
+	IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface TopCardsProps {
 	stocks: Stock[];
+	onRemoveStock: (stockName: string) => void;
 }
 
-const TopCards: React.FC<TopCardsProps> = ({ stocks }) => {
+const TopCards: React.FC<TopCardsProps> = ({
+	stocks,
+	onRemoveStock,
+}) => {
 	return (
-		<div style={{ display: "flex", gap: "1rem" }}>
+		<div className="top-card">
 			{stocks.map(stock => (
 				<Card
 					key={stock.name}
 					style={{
-						backgroundColor: "rgba(40, 40, 40)",
-
-						color:
+						backgroundColor:
 							stock.currentPrice > (stock.alertPrice || 0)
 								? "green"
 								: "red",
+						color: "white",
+						position: "relative",
 					}}
 				>
+					<div className="top-card-icon">
+						<IconButton
+							onClick={() => onRemoveStock(stock.name)}
+						>
+							<CloseIcon />
+						</IconButton>
+					</div>
 					<CardContent>
 						<Typography variant="h5">
 							{stock.name}

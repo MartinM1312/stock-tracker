@@ -6,10 +6,10 @@ import {
 import WebSocketService from "./WebSocketService";
 
 const websocketService = new WebSocketService(
-	"wss://ws.finnhub.io",
-	"ctcec5pr01qjor98dhogctcec5pr01qjor98dhp0"
+	process.env.API_ENDPOINT ?? "",
+	process.env.API_KEY ?? ""
 );
-const MAX_HISTORY_LENGTH = 5000;
+const MAX_HISTORY_LENGTH = 500;
 
 class StockService {
 	private stocks: Stock[] = [];
@@ -19,6 +19,7 @@ class StockService {
 			stock => stock.name === name
 		);
 		if (existingStock) {
+			existingStock.alertPrice = alertPrice;
 			return existingStock;
 		}
 		const newStock: Stock = {
@@ -28,9 +29,21 @@ class StockService {
 			alertPrice,
 			priceHistory: [],
 		};
+		this.stocks.forEach(stock => (stock.priceHistory = []));
 		this.stocks.push(newStock);
 		websocketService.subscribe(name);
 		return newStock;
+	}
+
+	removeStock(name: string): void {
+		const index = this.stocks.findIndex(
+			stock => stock.name === name
+		);
+		if (index === -1) {
+			return undefined;
+		}
+		this.stocks.splice(index, 1);
+		websocketService.unsubscribe(name);
 	}
 
 	updateStock(update: StockUpdate): Stock[] {

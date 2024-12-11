@@ -21,8 +21,20 @@ const LeftForm: React.FC<LeftFormProps> = ({
 		""
 	);
 
+	const validateFields = () => {
+		if (!selectedStock) {
+			alert("Please select a stock to add.");
+			return false;
+		}
+		if (!alertPrice) {
+			alert("Please enter a valid alert price.");
+			return false;
+		}
+		return true;
+	};
+
 	const handleSubmit = () => {
-		if (selectedStock && alertPrice) {
+		if (validateFields()) {
 			onAddStock(selectedStock, Number(alertPrice));
 			setSelectedStock("");
 			setAlertPrice("");
@@ -31,7 +43,7 @@ const LeftForm: React.FC<LeftFormProps> = ({
 
 	return (
 		<div>
-			<div style={{ marginBottom: 15, marginRight: 20 }}>
+			<div className="input-container">
 				<InputLabel color="primary" id="select-stock-label">
 					Stock
 				</InputLabel>
@@ -48,7 +60,7 @@ const LeftForm: React.FC<LeftFormProps> = ({
 					))}
 				</Select>
 			</div>
-			<div style={{ marginBottom: 15, marginRight: 20 }}>
+			<div className="input-container">
 				<TextField
 					label="Alert Price"
 					type="number"

@@ -1,3 +1,5 @@
+import { ApiResponse } from "../types";
+
 class WebSocketService {
 	private socket: WebSocket;
 
@@ -17,7 +19,7 @@ class WebSocketService {
 		console.log(this.socket.readyState);
 		if (this.socket.readyState === WebSocket.OPEN) {
 			console.log(
-				"WebSocket is already open. Sending subscribe message."
+				"WebSocket already open. Sending subscribe message..."
 			);
 			this.socket.send(
 				JSON.stringify({ type: "subscribe", symbol })
@@ -25,7 +27,7 @@ class WebSocketService {
 		} else {
 			console.log("Connecting ...");
 			this.socket.addEventListener("open", () => {
-				console.log("WebSocket connection established.");
+				console.log("WebSocket connected.");
 				this.socket.send(
 					JSON.stringify({ type: "subscribe", symbol })
 				);
@@ -40,18 +42,10 @@ class WebSocketService {
 		);
 	}
 
-	onMessage(callback: (data: any) => void): void {
+	onMessage(callback: (data: ApiResponse) => void): void {
 		this.socket.addEventListener("message", event => {
-			// console.log(
-			// 	"WebSocket message received:",
-			// 	event.data
-			// );
 			try {
 				const parsedData = JSON.parse(event.data);
-				// console.log(
-				// 	"Parsed WebSocket message:",
-				// 	parsedData
-				// );
 				callback(parsedData);
 			} catch (error) {
 				console.error(
