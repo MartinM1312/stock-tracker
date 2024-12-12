@@ -47,8 +47,19 @@ class StockService {
 	}
 
 	updateStock(update: StockUpdate): Stock[] {
-		this.stocks = this.stocks.map(stock =>
-			stock.name === update.name
+		this.stocks = this.stocks.map(stock => {
+			const isBelowAlert =
+				stock.alertPrice &&
+				update.currentPrice < stock.alertPrice;
+			if (
+				isBelowAlert &&
+				Notification.permission === "granted"
+			) {
+				new Notification(`${stock.name} Alert`, {
+					body: `Price dropped below alert: $${update.currentPrice}`,
+				});
+			}
+			return stock.name === update.name
 				? {
 						...stock,
 						currentPrice: update.currentPrice,
@@ -58,7 +69,6 @@ class StockService {
 									stock.currentPrice) *
 							  100
 							: 0,
-						timeStamp: update.timeStamp,
 						priceHistory: [
 							...stock.priceHistory.slice(
 								-MAX_HISTORY_LENGTH + 1
@@ -69,9 +79,22 @@ class StockService {
 							},
 						],
 				  }
-				: stock
+				: stock;
+		});
+
+		localStorage.setItem(
+			"stocks",
+			JSON.stringify(this.stocks)
 		);
+
 		return this.stocks;
+	}
+
+	loadStocksFromStorage(): void {
+		const savedStocks = localStorage.getItem("stocks");
+		if (savedStocks) {
+			this.stocks = JSON.parse(savedStocks);
+		}
 	}
 
 	getStocks(): Stock[] {

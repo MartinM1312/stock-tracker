@@ -11,6 +11,13 @@ const Home: React.FC = () => {
 	const [stocks, setStocks] = useState<Stock[]>([]);
 
 	useEffect(() => {
+		if (
+			"Notification" in window &&
+			Notification.permission === "default"
+		) {
+			Notification.requestPermission();
+		}
+
 		StockService.startListening();
 		const interval = setInterval(() => {
 			setStocks([...StockService.getStocks()]);
